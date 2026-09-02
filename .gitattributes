@@ -1,0 +1,15 @@
+* text=auto
+
+*.cs      text diff=csharp
+*.xaml    text
+*.csproj  text
+*.slnx    text
+*.rs      text diff=rust
+*.toml    text
+*.md      text
+*.txt     text
+*.tsv     text
+
+*.dds     binary
+*.dll     binary
+*.exe     binary

@@ -1,0 +1,404 @@
+<Window x:Class="AAEmu.ZoneManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AAEmu Zone Manager" Width="1400" Height="900"
+        MinWidth="1180" MinHeight="760"
+        Loaded="Window_Loaded" Closing="Window_Closing" Closed="Window_Closed">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="245" />
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="#101A27" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,11">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" LastChildFill="True">
+          <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+            <TextBlock Text="AAEmu" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="  ZONE MANAGER" FontSize="22" Foreground="{StaticResource AccentBrush}" FontWeight="Light" />
+          </StackPanel>
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+            <Ellipse Width="9" Height="9" Fill="{Binding WorldConnectionBrush}" Margin="0,0,7,0" />
+            <StackPanel Margin="0,0,18,0">
+              <TextBlock Text="{Binding WorldConnectionStatus}" FontWeight="SemiBold" FontSize="11" />
+              <TextBlock Text="{Binding WorldConnectionDetails}" Foreground="{StaticResource MutedTextBrush}" FontSize="9" />
+            </StackPanel>
+            <Border BorderBrush="{StaticResource MutedTextBrush}" BorderThickness="1" CornerRadius="3"
+                    Padding="8,4" Margin="0,0,12,0">
+              <StackPanel Orientation="Horizontal">
+                <CheckBox Content="Auto zone management" VerticalAlignment="Center"
+                          IsChecked="{Binding DataContext.Settings.AutoZoneManagement, RelativeSource={RelativeSource AncestorType=Window}}"
+                          ToolTip="Follow players: start the zone they approach, stop zones left empty." />
+                <TextBlock Text="Start" VerticalAlignment="Center" Margin="12,0,4,0" FontSize="11" />
+                <ComboBox Width="160" VerticalAlignment="Center"
+                          ItemsSource="{Binding StartTemplates}"
+                          SelectedValue="{Binding DataContext.Settings.StartTemplate, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                          SelectedValuePath="Value" DisplayMemberPath="Label"
+                          ToolTip="Which zones are always hosted, and whose position drives pre-starts." />
+                <TextBlock Text="Zone" VerticalAlignment="Center" Margin="10,0,4,0" FontSize="11" />
+                <ComboBox Width="140" VerticalAlignment="Center"
+                          ItemsSource="{Binding Zones}"
+                          SelectedItem="{Binding DefaultZone, Mode=TwoWay}"
+                          DisplayMemberPath="Zone.Name"
+                          ToolTip="Used by the 'Default zone' template." />
+                <TextBlock Text="Player" VerticalAlignment="Center" Margin="10,0,4,0" FontSize="11" />
+                <ComboBox Width="120" VerticalAlignment="Center" IsEditable="True"
+                          ItemsSource="{Binding WorldPlayersView}"
+                          DisplayMemberPath="Name"
+                          Text="{Binding DataContext.Settings.FollowPlayerName, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}"
+                          ToolTip="Online characters, sorted by name. Editable, so you can name someone who is not logged in yet." />
+                <TextBlock Text="Max" VerticalAlignment="Center" Margin="12,0,4,0" FontSize="11" />
+                <TextBox Width="38" VerticalAlignment="Center" TextAlignment="Center"
+                         Text="{Binding DataContext.Settings.MaxActiveZones, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Hard ceiling on concurrently hosted zones." />
+                <Button Content="{Binding AutoZoneButtonText}" Padding="12,3" Margin="12,0,0,0"
+                        Click="ToggleAutoZone_Click" />
+                <TextBlock Text="{Binding AutoZoneStatus}" VerticalAlignment="Center" Margin="10,0,0,0"
+                           FontSize="9" Foreground="{StaticResource MutedTextBrush}" />
+              </StackPanel>
+            </Border>
+            <Button Content="Open runtime files" Click="OpenRuntime_Click" />
+          </StackPanel>
+        </DockPanel>
+        <Grid Grid.Row="1" Margin="0,9,0,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Text="AAEmu zone host" Foreground="{StaticResource MutedTextBrush}" Margin="0,0,8,0" />
+          <TextBox Grid.Column="1" Text="{Binding Settings.NativeHostExecutablePath, UpdateSourceTrigger=PropertyChanged}" />
+          <Button Grid.Column="2" Content="Browse" Click="BrowseHost_Click" />
+          <TextBlock Grid.Column="4" Text="Native zone DLL" Foreground="{StaticResource MutedTextBrush}" Margin="0,0,8,0" />
+          <TextBox Grid.Column="5" Text="{Binding Settings.NativeGameDllPath, UpdateSourceTrigger=PropertyChanged}" />
+          <Button Grid.Column="6" Content="Browse" Click="BrowseExe_Click" />
+        </Grid>
+        <Grid Grid.Row="2" Margin="0,7,0,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Text="Decrypted game database (required)" Foreground="{StaticResource MutedTextBrush}" Margin="0,0,8,0" />
+          <TextBox Grid.Column="1" Text="{Binding Settings.CompactDatabasePath, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select your decrypted game database; no machine-specific path is bundled." />
+          <Button Grid.Column="2" Content="Set database" Click="BrowseDatabase_Click" />
+          <Button Grid.Column="4" Content="Reload map" Click="ReloadCatalog_Click" />
+        </Grid>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" Margin="12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="300" />
+        <ColumnDefinition Width="8" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="8" />
+        <ColumnDefinition Width="370" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="5" Padding="10">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <DockPanel>
+            <TextBlock Text="All zones" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock DockPanel.Dock="Right" Text="{Binding ZoneCountText}" Foreground="{StaticResource MutedTextBrush}" />
+          </DockPanel>
+          <TextBox Grid.Row="1" Margin="0,9,0,7" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" ToolTip="Filter by zone key, map name, or group" />
+          <ListBox x:Name="ZoneList" Grid.Row="2" ItemsSource="{Binding ZoneView}" SelectedItem="{Binding SelectedZone, Mode=TwoWay}" SelectionChanged="ZoneList_SelectionChanged">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Ellipse Grid.Column="0" Width="8" Height="8" HorizontalAlignment="Left">
+                    <Ellipse.Style>
+                      <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="#56677A" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                            <Setter Property="Fill" Value="{StaticResource SuccessBrush}" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </Ellipse.Style>
+                  </Ellipse>
+                  <TextBlock Grid.Column="1" Text="{Binding Zone.ZoneKey}" Foreground="{StaticResource AccentBrush}" FontFamily="Consolas" />
+                  <StackPanel Grid.Column="2">
+                    <TextBlock Text="{Binding Zone.Name}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock FontSize="10" Foreground="{StaticResource MutedTextBrush}">
+                      <Run Text="Group " /><Run Text="{Binding Zone.GroupId, TargetNullValue=unmapped}" /><Run Text="  ·  " /><Run Text="{Binding Status}" />
+                    </TextBlock>
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+
+      <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Stretch" Background="Transparent" />
+
+      <Border Grid.Column="2" Background="#09131F" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="5">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <DockPanel Margin="11,7">
+            <StackPanel Orientation="Horizontal">
+              <Button Content="Back" Padding="8,3" Click="MapBack_Click" />
+              <TextBlock Text="{Binding MapTitleText}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Margin="5,0,0,0" />
+              <TextBlock Text="  -  select a zone to open its map and exact server boundary" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+              <Button Content="Set map assets" Padding="8,3" Click="BrowseMapFiles_Click" ToolTip="Select the extracted client map root; database map_resources paths choose the files." />
+              <Button Content="Open assets" Padding="8,3" Click="OpenMapFiles_Click" />
+              <TextBlock Text="Zoom" Foreground="{StaticResource MutedTextBrush}" Margin="0,0,7,0" />
+              <Slider x:Name="MapZoom" Width="110" Minimum="0.45" Maximum="5" Value="0.65" TickFrequency="0.05" />
+            </StackPanel>
+          </DockPanel>
+          <ScrollViewer x:Name="MapScrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#07111B">
+            <Canvas x:Name="WorldMapCanvas" Width="1050" Height="630" Background="#081828">
+              <Canvas.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding Value, ElementName=MapZoom}" ScaleY="{Binding Value, ElementName=MapZoom}" />
+              </Canvas.LayoutTransform>
+            </Canvas>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+
+      <GridSplitter Grid.Column="3" Width="8" HorizontalAlignment="Stretch" Background="Transparent" />
+
+      <Border Grid.Column="4" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="5" Padding="12">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel DataContext="{Binding SelectedZone}">
+            <TextBlock Text="ZONE OPTIONS" Foreground="{StaticResource MutedTextBrush}" FontSize="11" />
+            <TextBlock Text="{Binding Zone.Name, TargetNullValue=Select a zone}" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" />
+            <TextBlock Foreground="{StaticResource AccentBrush}" Margin="0,2,0,8">
+              <Run Text="Zone key " /><Run Text="{Binding Zone.ZoneKey}" /><Run Text="  ·  Group " /><Run Text="{Binding Zone.GroupId, TargetNullValue=unmapped}" />
+            </TextBlock>
+            <Border Height="170" Background="#07111B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,7">
+              <Image Source="{Binding DataContext.SelectedZoneMapSource, RelativeSource={RelativeSource AncestorType=Window}}" Stretch="Uniform" />
+            </Border>
+            <UniformGrid Columns="3" Margin="-3,0,-3,4">
+              <Button Content="Launch" Click="LaunchZone_Click" />
+              <Button Content="Stop" Click="StopZone_Click" />
+              <Button Content="Restart" Click="RestartZone_Click" />
+            </UniformGrid>
+            <TextBlock Text="{Binding Status}" FontWeight="SemiBold" />
+            <TextBlock Foreground="{StaticResource MutedTextBrush}">
+              <Run Text="PID " /><Run Text="{Binding ProcessId, TargetNullValue=—}" /><Run Text="  ·  Exit " /><Run Text="{Binding ExitCode, TargetNullValue=—}" />
+            </TextBlock>
+
+            <DockPanel Margin="0,3,0,0">
+              <Ellipse DockPanel.Dock="Left" Width="8" Height="8" Margin="0,0,7,0" VerticalAlignment="Center">
+                <Ellipse.Style>
+                  <Style TargetType="Ellipse">
+                    <Setter Property="Fill" Value="#7E8B99" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsWorldConnected}" Value="True">
+                        <Setter Property="Fill" Value="{StaticResource SuccessBrush}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </Ellipse.Style>
+              </Ellipse>
+              <TextBlock Text="{Binding WorldConnectionStatus}" FontSize="11" />
+            </DockPanel>
+
+            <Expander Header="NATIVE CONSOLE COMMANDS" Margin="0,8,0,2" IsExpanded="True" IsEnabled="{Binding IsRunning}">
+              <StackPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,5,0,0">
+                <DockPanel>
+                  <Button DockPanel.Dock="Right" Content="Refresh native list" Padding="8,4" Click="RefreshConsoleCatalog_Click" />
+                  <TextBox Text="{Binding ConsoleCommandSearchText, UpdateSourceTrigger=PropertyChanged}" ToolTip="Search native command names, syntax, and help" />
+                </DockPanel>
+                <CheckBox Content="Include console variables" IsChecked="{Binding ShowConsoleVariables}" />
+                <ListBox x:Name="ConsoleCommandList" Height="245" ItemsSource="{Binding ConsoleEntryView}"
+                         SelectionChanged="ConsoleCommandList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel>
+                        <DockPanel>
+                          <TextBlock DockPanel.Dock="Right" Text="{Binding KindLabel}" FontSize="9" Foreground="{StaticResource MutedTextBrush}" />
+                          <TextBlock Text="{Binding Name}" FontFamily="Consolas" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding Syntax}" FontFamily="Consolas" FontSize="10" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Help}" FontSize="10" TextWrapping="Wrap" MaxHeight="46" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+                <DockPanel Margin="0,3,0,0">
+                  <Button DockPanel.Dock="Right" Content="Run" Padding="12,5" Click="SendConsoleCommand_Click" />
+                  <TextBox Text="{Binding ConsoleCommandText, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas"
+                           KeyDown="ConsoleCommandInput_KeyDown" ToolTip="Select a command or type one, then press Enter" />
+                </DockPanel>
+                <TextBlock Text="{Binding ConsoleCommandStatus}" Foreground="{StaticResource MutedTextBrush}" FontSize="10" TextWrapping="Wrap" Margin="2,3" />
+              </StackPanel>
+            </Expander>
+
+            <TextBlock Style="{StaticResource SectionLabel}" Text="INTEGRATED HOST SWITCHES" />
+            <CheckBox Content="-dedicated" IsChecked="{Binding DataContext.Settings.Dedicated, RelativeSource={RelativeSource AncestorType=Window}}" />
+            <CheckBox Content="-devmode" IsChecked="{Binding DataContext.Settings.DevMode, RelativeSource={RelativeSource AncestorType=Window}}" />
+            <CheckBox Content="-fulldump" IsChecked="{Binding DataContext.Settings.FullDump, RelativeSource={RelativeSource AncestorType=Window}}" />
+
+            <TextBlock Style="{StaticResource SectionLabel}" Text="NATIVE ENGINE BOOTSTRAP" />
+            <CheckBox Content="sys_dedicated_server" IsChecked="{Binding DataContext.Settings.SystemDedicatedServer, RelativeSource={RelativeSource AncestorType=Window}}" />
+            <CheckBox Content="Disable rendering (e_render 0)" IsChecked="{Binding DataContext.Settings.DisableRendering, RelativeSource={RelativeSource AncestorType=Window}}" />
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="92" /><ColumnDefinition Width="*" /><ColumnDefinition Width="58" /><ColumnDefinition Width="58" /></Grid.ColumnDefinitions>
+              <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="r_Driver" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.Settings.Renderer, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Grid.Row="0" Grid.Column="2" Text="width" FontFamily="Consolas" FontSize="11" Margin="5,0,0,0" />
+              <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding DataContext.Settings.RenderWidth, RelativeSource={RelativeSource AncestorType=Window}}" />
+              <TextBlock Grid.Row="1" Text="Pak priority" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DataContext.Settings.PakPriority, RelativeSource={RelativeSource AncestorType=Window}}" />
+              <TextBlock Grid.Row="1" Grid.Column="2" Text="height" FontFamily="Consolas" FontSize="11" Margin="5,0,0,0" />
+              <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding DataContext.Settings.RenderHeight, RelativeSource={RelativeSource AncestorType=Window}}" />
+            </Grid>
+
+            <TextBlock Style="{StaticResource SectionLabel}" Text="SELECTED MAP CVARS" />
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="72" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="+zone" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Zone.Name}" IsReadOnly="True" />
+              <TextBlock Grid.Row="1" Text="+sv_map" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Zone.Name}" IsReadOnly="True" />
+            </Grid>
+
+            <TextBlock Style="{StaticResource SectionLabel}" Text="WORLD CONNECTION" />
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="72" /><ColumnDefinition Width="*" /><ColumnDefinition Width="77" /><ColumnDefinition Width="58" /></Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Text="+world_ip" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Column="1" Text="{Binding DataContext.Settings.WorldIp, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Grid.Column="2" Text="+world_port" FontFamily="Consolas" FontSize="11" Margin="6,0,0,0" />
+              <TextBox Grid.Column="3" Text="{Binding DataContext.Settings.WorldPort, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <Grid Margin="0,2,0,0">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="58" /></Grid.ColumnDefinitions>
+              <TextBlock Text="World status API port" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Column="1" Text="{Binding DataContext.Settings.WorldApiPort, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" ToolTip="AAEmu World Web API port (default 1280)" />
+            </Grid>
+            <TextBlock Style="{StaticResource SectionLabel}" Text="CONTENT" />
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="92" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="+db_location" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.Settings.DbLocation, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Grid.Row="1" Text="+locale" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DataContext.Settings.Locale, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <TextBlock Text="+localized_texts_db_location (optional)" FontFamily="Consolas" FontSize="11" Margin="0,3,0,0" />
+            <TextBox Text="{Binding DataContext.Settings.LocalizedTextsDbLocation, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Style="{StaticResource SectionLabel}" Text="SIMULATION CVARS" />
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="62" /></Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Text="+npc_move_skip_standing" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.Settings.NpcMoveSkipStanding, RelativeSource={RelativeSource AncestorType=Window}}" />
+              <TextBlock Grid.Row="1" Text="+npc_move_skip_disabledAI" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DataContext.Settings.NpcMoveSkipDisabledAi, RelativeSource={RelativeSource AncestorType=Window}}" />
+              <TextBlock Grid.Row="2" Text="+npc_movement_skip" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DataContext.Settings.NpcMovementSkip, RelativeSource={RelativeSource AncestorType=Window}}" />
+              <TextBlock Grid.Row="3" Text="+ai_systemupdate" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DataContext.Settings.AiSystemUpdate, RelativeSource={RelativeSource AncestorType=Window}}" />
+              <TextBlock Grid.Row="4" Text="+log_Verbosity" FontFamily="Consolas" FontSize="11" />
+              <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DataContext.Settings.LogVerbosity, RelativeSource={RelativeSource AncestorType=Window}}" />
+            </Grid>
+            <TextBlock Style="{StaticResource SectionLabel}" Text="EXTRA ARGUMENTS (PASSED THROUGH)" />
+            <TextBox Text="{Binding DataContext.Settings.ExtraArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="48" TextWrapping="Wrap" />
+            <Button Content="Copy full command" HorizontalAlignment="Stretch" Click="CopyCommand_Click" />
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="2" Background="#0E1722" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="12,8">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="8" />
+          <ColumnDefinition Width="430" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+        <DockPanel>
+          <TextBlock Text="ZONE LOGS" FontWeight="SemiBold" />
+          <TextBlock DockPanel.Dock="Right" Text="One expandable stream per launched zone · full files are retained outside the repository" Foreground="{StaticResource MutedTextBrush}" />
+        </DockPanel>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+          <ItemsControl ItemsSource="{Binding LogZones}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Expander IsExpanded="{Binding IsLogExpanded, Mode=TwoWay}" Margin="0,0,0,4" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                  <Expander.Header>
+                    <DockPanel Margin="7,4" LastChildFill="True">
+                      <TextBlock DockPanel.Dock="Left" Foreground="{StaticResource AccentBrush}" FontFamily="Consolas" Text="{Binding Zone.ZoneKey}" Width="48" />
+                      <TextBlock DockPanel.Dock="Left" Text="{Binding Zone.Name}" FontWeight="SemiBold" />
+                      <TextBlock DockPanel.Dock="Right" Text="{Binding Status}" Foreground="{StaticResource MutedTextBrush}" />
+                    </DockPanel>
+                  </Expander.Header>
+                  <Grid Height="145" Background="#070D13">
+                    <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                    <ListBox Grid.Row="0" ItemsSource="{Binding LogLines}" FontFamily="Consolas" FontSize="11" ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+                    <DockPanel Grid.Row="1" Margin="5">
+                      <TextBlock Text="{Binding LogFilePath}" Foreground="{StaticResource MutedTextBrush}" TextTrimming="CharacterEllipsis" />
+                      <Button DockPanel.Dock="Right" Content="Clear view" Padding="8,3" Tag="{Binding}" Click="ClearLog_Click" />
+                      <Button DockPanel.Dock="Right" Content="Open folder" Padding="8,3" Tag="{Binding}" Click="OpenLogFolder_Click" />
+                    </DockPanel>
+                  </Grid>
+                </Expander>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+        </Grid>
+
+        <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Stretch" Background="Transparent" />
+
+        <Grid Grid.Column="2" Margin="10,0,0,0">
+          <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+          <DockPanel>
+            <TextBlock Text="PLAYERS" FontWeight="SemiBold" />
+            <TextBlock DockPanel.Dock="Right" Text="{Binding WorldConnectionStatus}" Foreground="{Binding WorldConnectionBrush}" FontWeight="SemiBold" />
+          </DockPanel>
+          <DataGrid Grid.Row="1" Margin="0,6,0,0" ItemsSource="{Binding WorldPlayers}" IsReadOnly="True"
+                    AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False"
+                    GridLinesVisibility="Horizontal" SelectionMode="Single">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Player" Binding="{Binding Name}" Width="*" />
+              <DataGridTextColumn Header="Lv" Binding="{Binding Level}" Width="38" />
+              <DataGridTextColumn Header="Zone" Binding="{Binding ZoneName}" Width="150" />
+              <DataGridTextColumn Header="Key" Binding="{Binding ZoneKey}" Width="52" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

@@ -1,0 +1,321 @@
+# zone_key	name	closed	group_id
+# Use name for: map <name>  and  +zone / +sv_map
+0	login	0	
+2	siegefield	0	
+3	npc_single	0	
+4	cbsuh_nonpc	0	144
+21	old_w_garangdol	0	
+22	old_w_marianople	0	
+23	old_w_solzreed	0	
+24	old_w_two_crowns	0	
+25	old_w_cross_plains	0	
+29	old_w_white_forest	0	
+30	old_w_gold_moss	0	
+31	old_w_longsand	0	
+32	old_w_gold_plains	0	
+33	old_w_cradle_genesis	0	
+34	old_w_bronze_rock	0	
+35	old_w_hanuimaru	0	
+36	old_w_nameless_canyon	0	
+37	old_w_gweoniod_forest	0	
+38	old_w_lilyut_mea	0	
+39	old_w_carcass	0	
+40	old_w_hell_swamp	0	
+41	old_w_death_mt	0	
+42	old_w_twist_coast	0	
+43	old_w_tornado_mea	0	
+44	old_w_dark_moon	0	
+45	old_w_firefly_pen	0	
+46	old_w_frozen_top	0	
+47	old_w_mirror_kingdom	0	
+72	ocean_level	0	
+73	old_e_black_desert	0	
+74	old_e_laveda	0	
+75	old_e_desert_of_fossils	0	
+76	old_e_sunny_wilderness	0	
+77	old_e_volcanic_shore	0	
+78	old_e_sylvina_volcanic_region	0	
+79	old_e_hasla	0	
+80	old_e_ruins_of_hariharalaya	0	
+81	old_e_steppe_belt	0	
+82	old_e_rainbow_field	0	
+83	old_e_lokaloka_mt_south	0	
+84	old_e_lokaloka_mt_north	0	
+85	old_e_return_land	0	
+86	old_e_loca_checkers	0	
+87	old_e_night_velley	0	
+88	old_e_una_basin	0	
+89	old_e_ancient_forest	0	
+90	old_e_ynystere	0	
+91	old_e_sing_land	0	
+92	old_e_falcony_plateau	0	
+93	old_e_tiger_mt	0	
+94	old_e_mahadevi	0	
+95	old_e_sunrise_pen	0	
+96	old_e_white_island	0	
+97	old_w_ynys_island	0	
+98	old_w_wandering_island	0	
+99	origin	0	
+100	model_room	0	
+101	worldlevel8x8	0	
+102	world8x8_noone	0	
+104	module_object_update	0	
+105	module_hightmap_update	0	
+108	npc_brave	0	
+117	background_lod	0	
+118	main_world_0_0	0	
+119	main_world_1_0	0	
+120	main_world_2_0	0	
+121	main_world_0_1	0	
+122	main_world_1_1	0	
+123	main_world_2_1	0	
+124	main_world_0_2	0	
+125	main_world_1_2	0	
+126	main_world_2_2	0	
+127	main_world_rain_bow	0	
+128	main_world_tiger	0	
+129	w_gweonid_forest_1	0	1
+130	main_world_two_crowns	0	
+131	main_world_3_0	0	
+132	main_world_bone	0	
+133	w_marianople_1	0	2
+134	instance_silent_colossus	1	32
+135	main_world_rough_ynystere	0	
+136	e_steppe_belt_1	0	14
+137	e_ruins_of_hariharalaya_1	0	15
+138	e_lokas_checkers_1	0	16
+139	e_ynystere_1	0	17
+140	w_garangdol_plains_1	0	3
+141	e_sunrise_peninsula_1	0	4
+142	w_solzreed_1	0	5
+143	w_white_forest_1	0	18
+144	w_lilyut_meadow_1	0	6
+145	w_the_carcass_1	0	19
+146	e_rainbow_field_1	0	7
+147	sound_test	0	
+148	w_cross_plains_1	0	20
+149	w_two_crowns_1	0	8
+150	w_cradle_of_genesis_1	0	21
+151	w_golden_plains_1	0	22
+152	3d_environment_object	0	
+153	e_mahadevi_1	0	9
+154	w_bronze_rock_1	0	10
+155	e_hasla_1	0	23
+156	e_falcony_plateau_1	0	11
+157	e_sunny_wilderness_1	0	13
+158	e_tiger_spine_mountains_1	0	24
+159	e_ancient_forest	0	25
+160	e_singing_land_1	0	12
+161	w_hell_swamp_1	0	26
+162	w_long_sand_1	0	27
+163	test_w_gweonid_forest	0	
+164	w_barren_land	1	28
+165	machinima_w_solzreed	0	
+166	npc_test	0	
+167	3d_natural_object	0	
+168	machinima_w_gweonid_forest	0	
+169	machinima_w_garangdol_plains	0	
+170	machinima_w_bronze_rock	0	
+171	sumday_nonpc	0	
+172	s_lost_island	0	30
+173	s_lostway_sea	0	30
+174	gstar2010	1	
+175	chls_model_room	0	
+176	s_zman_nonpc	0	
+177	loginbg2	0	
+178	w_solzreed_2	0	5
+179	w_solzreed_3	0	5
+180	s_silent_sea_7	0	36
+181	w_gweonid_forest_2	0	1
+182	w_gweonid_forest_3	0	1
+183	w_marianople_2	0	2
+184	e_falcony_plateau_2	0	11
+185	w_garangdol_plains_2	0	3
+186	w_two_crowns_2	0	8
+187	e_rainbow_field_2	0	7
+188	e_rainbow_field_3	0	7
+189	e_rainbow_field_4	0	7
+190	e_sunny_wilderness_2	0	13
+191	e_sunrise_peninsula_2	0	4
+192	w_bronze_rock_2	0	10
+193	w_bronze_rock_3	0	10
+194	e_singing_land_2	0	12
+195	w_lilyut_meadow_2	0	6
+196	e_mahadevi_2	0	9
+197	e_mahadevi_3	0	9
+198	instance_training_camp	0	31
+204	o_salpimari	1	33
+205	o_nuimari	1	34
+206	w_golden_plains_2	0	22
+207	w_golden_plains_3	0	22
+209	w_dark_side_of_the_moon	1	
+210	s_silent_sea_1	0	36
+211	s_silent_sea_2	0	36
+212	s_silent_sea_3	0	36
+213	s_silent_sea_4	0	36
+214	s_silent_sea_5	0	36
+215	s_silent_sea_6	0	36
+216	e_una_basin	1	
+217	s_nightmare_coast	1	
+218	s_golden_sea_1	0	39
+219	s_golden_sea_2	0	39
+221	s_crescent_sea	0	40
+225	lock_south_sunrise_peninsula	1	41
+226	lock_golden_sea	1	41
+227	lock_left_side_of_silent_sea	1	41
+228	lock_right_side_of_silent_sea_1	1	41
+229	lock_right_side_of_silent_sea_2	1	41
+233	o_seonyeokmari	1	43
+234	o_rest_land	1	44
+236	instance_burntcastle_armory	0	45
+240	instance_sal_temple	0	47
+241	instance_hadir_farm	0	46
+242	e_ruins_of_hariharalaya_2	0	15
+243	e_ruins_of_hariharalaya_3	0	15
+244	w_white_forest_2	0	18
+245	w_long_sand_2	0	27
+246	e_lokas_checkers_2	0	16
+247	e_steppe_belt_2	0	14
+248	w_hell_swamp_2	0	26
+251	e_sylvina_region	1	96
+256	e_singing_land_3	0	12
+257	w_cross_plains_2	0	20
+258	e_tiger_spine_mountains_2	0	24
+259	e_ynystere_2	0	17
+260	arche_mall	0	49
+261	e_white_island	1	48
+262	instance_cuttingwind_deadmine	0	50
+264	instance_cradle_of_destruction	0	52
+265	instance_howling_abyss	0	51
+266	w_mirror_kingdom_1	0	79
+267	w_frozen_top_1	1	42
+269	w_hanuimaru_1	0	93
+270	e_lokaloka_mountains_1	0	99
+271	TEST_instance_violent_maelstrom	0	53
+272	e_hasla_2	0	23
+273	w_the_carcass_2	0	19
+274	e_hasla_3	0	23
+275	o_land_of_sunlights	1	56
+276	o_abyss_gate	1	54
+277	s_lonely_sea_1	1	
+278	instance_nachashgar	0	55
+280	instance_howling_abyss_2	0	58
+281	o_ruins_of_gold	1	57
+282	o_shining_shore_1	1	61
+283	s_freedom_island	0	59
+284	s_pirate_island	0	60
+285	instance_immortal_isle	0	62
+286	e_sunny_wilderness_3	0	13
+287	e_sunny_wilderness_4	0	13
+288	o_the_great_reeds	1	63
+289	s_silent_sea_8	0	36
+290	instance_immortal_isle_easy	0	64
+292	instance_nachashgar_easy	0	66
+293	o_library_1	1	67
+294	o_library_2	1	65
+295	o_library_3	1	69
+296	instance_library_1 	1	70
+297	instance_library_2	1	71
+298	instance_library_3	1	72
+299	tutorial_test	1	
+300	instance_prologue	0	68
+301	o_shining_shore_2	1	61
+302	instance_training_camp_1on1	0	77
+303	instance_library_boss_1	1	73
+304	instance_library_boss_2	1	74
+305	instance_library_boss_3	1	75
+306	instance_library_tower_defense	1	76
+307	o_dew_plains	1	78
+308	s_broken_mirrors_sea_1	0	80
+309	s_broken_mirrors_sea_2	1	41
+310	o_whale_song_bay	1	103
+311	lock_left_side_of_broken_mirrors_sea	1	41
+312	o_epherium_1	1	82
+313	instance_battle_field	0	81
+314	o_epherium_2	1	82
+315	instance_library_heart	1	85
+316	instance_burntcastle_armory_hard	0	84
+317	instance_hadir_farm_hard	0	83
+318	instance_cuttingwind_deadmine_hard	0	87
+319	instance_sal_temple_hard	0	86
+320	instance_cradle_of_destruction_hard	0	88
+321	instance_feast_garden	0	89
+322	instance_training_camp_no_item	0	90
+323	instance_the_judge_of_uthstin	0	91
+326	instance_battle_field_of_feast	0	92
+327	instance_prologue_izuna	0	94
+328	w_cradle_of_genesis_2	0	21
+329	s_boiling_sea_1	1	
+330	s_boiling_sea_2	1	
+331	s_boiling_sea_3	1	
+332	s_boiling_sea_4	0	95
+333	w_hanuimaru_2	0	93
+334	w_hanuimaru_3	0	93
+335	s_lonely_sea_2	1	
+337	o_room_of_queen_1	0	98
+338	instance_sea_of_chaos	0	97
+339	s_boiling_sea_5	0	95
+340	e_lokaloka_mountains_2	0	99
+341	o_room_of_queen_2	0	100
+342	o_room_of_queen_3	1	101
+343	s_whale_swell_strait	1	104
+344	o_candlestick_of_sea	1	102
+345	lock_left_side_of_whale_sea	1	41
+346	instance_hanging_gardens_of_ipna	0	105
+347	instance_festival_camp_1on1	0	106
+348	promotion	1	
+349	promotion_45	1	
+350	o_hirama_the_west_1	1	107
+351	o_hirama_the_west_2	1	107
+352	instance_golden_plains	0	108
+353	instance_golden_plains_war	1	109
+354	o_hirama_the_east_1	1	110
+355	o_hirama_the_east_2	1	110
+356	instance_library_new_boss_1	0	111
+357	instance_library_new_boss_2	1	112
+358	instance_library_new_boss_3	1	113
+359	test_arcaneearth	0	114
+360	instance_library_new_heart	1	115
+361	library_lobby_1f	1	116
+362	library_lobby_2f	1	117
+363	library_lobby_3f	1	118
+364	library_lobby_4f	1	119
+365	instance_library_boss_total	0	120
+366	instance_carcass	0	121
+367	instance_the_last_day_of_hiramakand	0	122
+368	instance_challenge_tower	0	125
+369	zone_instance_defense_of_feast	1	126
+370	instance_sea_survival	0	127
+371	tod_test	1	
+372	instance_sea_survival_2	0	129
+373	instance_eternity	0	130
+374	instance_dew_plain	0	131
+375	loginbg5	1	
+376	instance_dewplane_boss	0	132
+378	the_garden_1	0	133
+379	gatekeeper_hall	0	134
+381	instance_hanuimaru	0	135
+382	the_garden_2	0	133
+383	instance_restraint_of_power	0	136
+384	instance_phantom_of_delphinad	0	137
+386	instance_arena_2on2	1	138
+387	o_land_of_magic	1	139
+388	o_mount_ipnir_1	1	140
+389	instance_garuda_nest	0	141
+390	instance_mount_ipnir_story	0	142
+391	o_mount_ipnir_2	1	140
+393	instance_event_camp_1on1	0	143
+395	instance_black_thorn	1	145
+396	instance_black_spike	0	146
+397	o_western_prairie_1	1	147
+398	instance_nachashgar_ancient	0	148
+399	instance_cuttlefish_event_zone	0	149
+401	o_western_prairie_2	1	147
+402	instance_dimensional_defence	0	150
+403	instance_event_hanuimaru	0	151
+405	w_golden_moss_forest	1	152
+406	instance_training_camp_1on1_ga	0	153
+407	instance_burntcastle_armory_nightmare	0	154
+408	instance_divided_crossroad	0	155
+409	instance_noryette_battlefield	0	156
+410	instance_life_dungeon_daru	0	158

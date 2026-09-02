@@ -1,0 +1,14 @@
+[package]
+name = "aaemu-zone-host"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "aaemu-zone-host"
+path = "src/main.rs"
+
+[profile.release]
+codegen-units = 1
+lto = true
+panic = "abort"
+strip = "symbols"

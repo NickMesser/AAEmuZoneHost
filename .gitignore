@@ -1,0 +1,31 @@
+# Build output
+bin/
+obj/
+publish/
+artifacts/
+
+# Rust native zone host (cargo) — never commit build output
+AAEmu.ZoneHost.Native/target/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.csproj.user
+*.DotSettings.user
+**/launchSettings.json
+
+# Runtime data. Zone Manager stores settings, logs, map assets and the
+# generated console-command catalog outside the working tree; none of it
+# belongs in the repository.
+settings.json
+MapAssets/Raw/
+CommandCatalog/
+*.log
+*.sqlite
+*.sqlite3
+*.db
+*.dds
+
+*.old
+*.bak
