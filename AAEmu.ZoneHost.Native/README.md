@@ -92,6 +92,21 @@ The deployed executable must remain beside `x2game-dev_dedicate.dll`. Like the o
 location; running the executable directly from Cargo's target directory will make native startup look
 for `game`, `game_pak`, and the database beside that target directory.
 
+### Common build problems
+
+| Error or symptom | Cause and fix |
+| --- | --- |
+| `link.exe not found` | The Visual C++ workload is missing or the build is running in an ordinary terminal. Install **Desktop development with C++**, then use the x64 Native Tools prompt. |
+| `LNK1104: cannot open file 'msvcrt.lib'` | The MSVC libraries are missing from the active environment. Repair/add the MSVC x64/x86 build-tools component and reopen the x64 Native Tools prompt. |
+| `LNK1104: cannot open file 'kernel32.lib'` | A Windows SDK is missing or was added after the terminal opened. Install a Windows 10/11 SDK and open a new x64 Native Tools prompt. |
+| `can't find crate for std` or target-not-installed errors | Run the `rustup target add` command above and make sure the target is `x86_64-pc-windows-msvc`. |
+| Build succeeds but no `AAEmu.ZoneHost.exe` is found | Cargo creates `aaemu-zone-host.exe` in the exact output path above. Copy and rename it during deployment. |
+| `Access denied` while copying | Stop the running zone in Zone Manager, confirm no `AAEmu.ZoneHost` process remains, and retry from an elevated PowerShell window if needed. |
+| The executable reports a missing native DLL at launch | Compilation succeeded; this is a runtime setup issue. Put `x2game-dev_dedicate.dll` in the game directory and configure its path in Zone Manager. |
+
+Avoid hard-coding `LIB` or `PATH` to a specific Visual Studio or Windows SDK version. The Visual Studio
+developer prompt selects the versions actually installed on the build machine.
+
 ## Verified native parity
 
 The entire non-CRT bootstrap is `FUN_140001000` at `0x140001000` in the CN 10.0.2.13
@@ -110,53 +125,6 @@ The startup block also matches the original values at offsets `0x940`, `0x948`, 
 `0x970`, `0x977..0x980`, and `0x9AC`. The host's configurable DLL path, explicit external save
 directory, nonzero fatal exit code, status log, and hidden command console are intentional manager
 extensions rather than original-bootstrap behavior.
-
-## Ship physicalization compatibility patch
-
-The 10.0.2.13 dedicate normally physicalizes a ship when its `SlaveSpawnController` finishes a
-portal-spawn transition. A ship restored directly from `WZUnitState` does not create that controller,
-so its `ShipUnitModel` and server simulation controller exist but its physical-entity getter remains
-null. The simulator then advances helm input without adding the hull to `ZWUnitMovements`.
-
-Immediately after loading x2game and before calling `CreateGameStartup`, Zone Host installs a narrow
-in-memory compatibility patch in `CreateServerUnitFromStatePackets`. For newly registered slave units,
-the patch resolves the unit model, requires the exact `ShipUnitModel` interface vtable, and invokes the
-normal model virtual at slot `+0x3B8` with `true`. This preserves the native initialization sequence and
-does not physicalize land vehicles or call `InitPhysicalEntity` directly.
-
-The patch is fail-closed. Before changing memory it verifies the complete seven-byte hook instruction,
-the complete 128-byte `0xCC` code cave, the eight-byte `FUN_39258830` model-lookup body at RVA
-`0x258830`, and the 20-byte `FUN_39289AC0` prologue at RVA `0x289AC0`. It also requires the
-`ShipUnitModel` interface vtable entry at RVA `0xFC6160` (`vtable + 0x3B8`) to contain the relocated
-address `module + 0x289AC0`. These checks prevent a nearby binary with matching hook bytes from using
-moved helper or virtual targets. The writer uses module-relative RVAs so ASLR is supported, restores
-page protection, and flushes the instruction cache. An exact already-patched hook and cave are accepted
-idempotently; an unknown build, foreign patch, or partial patch aborts startup with a clear fatal error
-that names the mismatched RVA and expected value. A successful startup prints and records one of these
-status messages:
-
-```text
-[ZONE HOST] Ship physicalization patch applied.
-[ZONE HOST] Ship physicalization patch already applied and verified.
-```
-
-This compatibility patch is verified only for the analyzed 10.0.2.13 x2game layout. A different
-native build must be reversed and assigned its own signatures and RVAs instead of weakening the guards.
-
-### Common build problems
-
-| Error or symptom | Cause and fix |
-| --- | --- |
-| `link.exe not found` | The Visual C++ workload is missing or the build is running in an ordinary terminal. Install **Desktop development with C++**, then use the x64 Native Tools prompt. |
-| `LNK1104: cannot open file 'msvcrt.lib'` | The MSVC libraries are missing from the active environment. Repair/add the MSVC x64/x86 build-tools component and reopen the x64 Native Tools prompt. |
-| `LNK1104: cannot open file 'kernel32.lib'` | A Windows SDK is missing or was added after the terminal opened. Install a Windows 10/11 SDK and open a new x64 Native Tools prompt. |
-| `can't find crate for std` or target-not-installed errors | Run the `rustup target add` command above and make sure the target is `x86_64-pc-windows-msvc`. |
-| Build succeeds but no `AAEmu.ZoneHost.exe` is found | Cargo creates `aaemu-zone-host.exe` in the exact output path above. Copy and rename it during deployment. |
-| `Access denied` while copying | Stop the running zone in Zone Manager, confirm no `AAEmu.ZoneHost` process remains, and retry from an elevated PowerShell window if needed. |
-| The executable reports a missing native DLL at launch | Compilation succeeded; this is a runtime setup issue. Put `x2game-dev_dedicate.dll` in the game directory and configure its path in Zone Manager. |
-
-Avoid hard-coding `LIB` or `PATH` to a specific Visual Studio or Windows SDK version. The Visual Studio
-developer prompt selects the versions actually installed on the build machine.
 
 ## Launch with Zone Manager
 

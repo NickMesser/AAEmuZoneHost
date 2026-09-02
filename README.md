@@ -234,31 +234,6 @@ Four things are deliberate additions rather than original behaviour: the configu
 explicit external save directory in place of the `Documents` junction, a nonzero fatal exit code,
 and the hidden console the manager injects commands through.
 
-## Ship physicalization patch
-
-The 10.0.2.13 dedicate physicalizes a ship when its `SlaveSpawnController` finishes a portal-spawn
-transition. A ship restored straight from `WZUnitState` never creates that controller, so its
-`ShipUnitModel` and simulation controller exist while its physical-entity getter stays null, and
-the simulator advances helm input without ever adding the hull to `ZWUnitMovements`.
-
-The host installs a narrow in-memory patch in `CreateServerUnitFromStatePackets` after loading
-x2game and before calling `CreateGameStartup`. For newly registered slave units it resolves the unit
-model, requires the exact `ShipUnitModel` interface vtable, and invokes the normal model virtual at
-slot `+0x3B8` with `true`. That keeps the native initialization sequence intact and does not touch
-land vehicles or call `InitPhysicalEntity` directly.
-
-The patch fails closed. Before writing anything it verifies the seven-byte hook instruction, the
-128-byte `0xCC` code cave, the `FUN_39258830` model-lookup body at RVA `0x258830`, and the
-`FUN_39289AC0` prologue at RVA `0x289AC0`, and requires the `ShipUnitModel` vtable entry at
-`vtable + 0x3B8` to hold the relocated `module + 0x289AC0`. Those checks stop a nearby build with
-matching hook bytes from being patched against moved targets. The writer works in module-relative
-RVAs so ASLR is fine, restores page protection, and flushes the instruction cache. An already-patched
-hook and cave are accepted; an unknown build or a partial patch aborts startup naming the mismatched
-RVA and the expected value.
-
-This is verified against the analyzed 10.0.2.13 x2game layout only. A different native build needs
-its own signatures and RVAs rather than weaker guards.
-
 ## Project layout
 
 ```text
