@@ -29,10 +29,14 @@ const SHIP_PHYSICALIZATION_RESUME_RVA: usize = 0x360869;
 const SHIP_MODEL_LOOKUP_RVA: usize = 0x258830;
 const SHIP_UNIT_MODEL_INTERFACE_VTABLE_RVA: usize = 0xFC5DA8;
 const SHIP_PHYSICALIZATION_VIRTUAL_RVA: usize = 0x289AC0;
-const SLAVE_MANAGER_ROOT_RVA: usize = 0x1738FB8;
 const SHIP_PHYSICALIZATION_CAVE_RVA: usize = 0xE76C80;
 const SHIP_PHYSICALIZATION_CAVE_SIZE: usize = 128;
 const SHIP_PHYSICALIZATION_HOOK_BYTES: [u8; 7] = [0x48, 0x8B, 0x15, 0x4F, 0x87, 0x2D, 0x01];
+// The cave replays the load it overwrote, so it must read the same global. Taking the address from
+// the verified hook bytes keeps the two from drifting apart: a hand-typed 0x1738FB8 read a word that
+// is always zero, and every slave WZUnitState then crashed the zone at 0x39360869.
+const SLAVE_MANAGER_ROOT_RVA: usize =
+    rip_relative_target(SHIP_PHYSICALIZATION_HOOK_RVA, &SHIP_PHYSICALIZATION_HOOK_BYTES);
 const SHIP_MODEL_LOOKUP_BYTES: [u8; 8] = [0x48, 0x8B, 0x81, 0x48, 0x85, 0x00, 0x00, 0xC3];
 const SHIP_PHYSICALIZATION_VIRTUAL_BYTES: [u8; 20] = [
     0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x48, 0x8B, 0xF9, 0x48, 0x8B, 0x89,
@@ -41,6 +45,13 @@ const SHIP_PHYSICALIZATION_VIRTUAL_BYTES: [u8; 20] = [
 const BUILD_IDENTIFIER: [u8; 16] = [
     0x82, 0xB4, 0x41, 0x5A, 0xA4, 0x55, 0xD2, 0x2A, 0x46, 0x59, 0xA3, 0x2C, 0x2E, 0x17, 0x97, 0x0B,
 ];
+
+/// Absolute RVA read by a 7-byte `mov r64, [rip + disp32]` at `rva`.
+const fn rip_relative_target(rva: usize, instruction: &[u8; 7]) -> usize {
+    let displacement =
+        i32::from_le_bytes([instruction[3], instruction[4], instruction[5], instruction[6]]);
+    (rva as i64 + instruction.len() as i64 + displacement as i64) as usize
+}
 
 type Handle = *mut c_void;
 type Module = *mut c_void;
@@ -948,5 +959,27 @@ fn main() {
             eprintln!("[ZONE HOST] Fatal bootstrap error: {error}");
             std::process::exit(1);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn replayed_load_reads_the_global_the_hook_overwrote() {
+        // mov rdx, [DAT_3A638FB8] at 0x39360862, image base 0x39000000.
+        assert_eq!(SLAVE_MANAGER_ROOT_RVA, 0x1638FB8);
+
+        let stub = build_ship_physicalization_stub().unwrap();
+        let load = stub
+            .windows(3)
+            .rposition(|bytes| bytes == [0x48, 0x8B, 0x15])
+            .unwrap();
+        let replay: [u8; 7] = stub[load..load + 7].try_into().unwrap();
+        assert_eq!(
+            rip_relative_target(SHIP_PHYSICALIZATION_CAVE_RVA + load, &replay),
+            rip_relative_target(SHIP_PHYSICALIZATION_HOOK_RVA, &SHIP_PHYSICALIZATION_HOOK_BYTES)
+        );
     }
 }
